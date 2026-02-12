@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Documents - Search Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .success {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .logged-in {
+            display: none;
+        }
+
+        .nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .quick-add {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .quick-add button {
+            background: #ffc107;
+            color: #000;
+            margin-top: 10px;
+        }
+
+        /* New Navigation Styles */
+        .nav-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="index.html" class="nav-btn">
+            <span>🔍</span> Search Engine
+        </a>
+    </div>
+
+    <div class="container">
+        <h1>📤 Upload Documents</h1>
+        <p class="subtitle">Add content to your search engine</p>
+
+        <div class="quick-add">
+            <strong>🚀 Quick Start:</strong> Don't have an account yet?
+            <button class="btn" onclick="loadSampleData()" style="margin-top: 10px; background: #ffc107; color: #000;">
+                Load 20+ Sample Documents
+            </button>
+        </div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="auth-section">
+            <h3>Login First</h3>
+            <div class="info">
+                💡 You need to login to upload documents. Use the test account or create a new one.
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" value="testuser@example.com" placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" value="testpassword123" placeholder="Password">
+            </div>
+
+            <button class="btn" onclick="login()">Login</button>
+            <button class="btn btn-secondary" onclick="showSignup()">Create New Account</button>
+        </div>
+
+        <!-- Signup Section -->
+        <div id="signupSection" class="auth-section" style="display: none;">
+            <h3>Create Account</h3>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="signupUsername" placeholder="username">
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Password">
+            </div>
+
+            <button class="btn" onclick="signup()">Create Account</button>
+            <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection" class="logged-in">
+            <div class="info">
+                ✅ Logged in! You can now upload documents.
+            </div>
+
+            <div class="form-group">
+                <label>Document Title</label>
+                <input type="text" id="docTitle" placeholder="e.g., Introduction to AI">
+            </div>
+
+            <div class="form-group">
+                <label>Document Content</label>
+                <textarea id="docContent" placeholder="Enter your document content here..."></textarea>
+            </div>
+
+            <button class="btn" onclick="uploadDocument()">Upload Document</button>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="success" id="successMsg"></div>
+        <div class="error" id="errorMsg"></div>
+
+        <div class="nav">
+            <a href="index.html">← Back to Search</a>
+        </div>
+    </div>
+
+    <script>
+        // Use relative path for deployment
+        const API_URL = '';
+        let authToken = localStorage.getItem('authToken');
+
+        // Check if already logged in
+        if (authToken) {
+            showUploadSection();
+        }
+
+        function showSignup() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('signupSection').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('signupSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+        }
+
+        function showUploadSection() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('signupSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+        }
+
+        async function signup() {
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                if (response.ok) {
+                    showSuccess('Account created! Logging you in...');
+                    setTimeout(() => {
+                        document.getElementById('loginEmail').value = email;
+                        document.getElementById('loginPassword').value = password;
+                        login();
+                    }, 1000);
+                } else {
+                    const error = await response.json();
+                    showError(error.detail || 'Signup failed');
+                }
+            } catch (error) {
+                showError('Could not connect to server');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    showSuccess('Logged in successfully!');
+                    setTimeout(showUploadSection, 500);
+                } else {
+                    showError('Invalid email or password');
+                }
+            } catch (error) {
+                showError('Could not connect to server');
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            location.reload();
+        }
+
+        async function uploadDocument() {
+            const title = document.getElementById('docTitle').value.trim();
+            const content = document.getElementById('docContent').value.trim();
+
+            if (!title || !content) {
+                showError('Please fill in both title and content');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/documents`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    showSuccess('✅ Document uploaded successfully!');
+                    document.getElementById('docTitle').value = '';
+                    document.getElementById('docContent').value = '';
+                } else {
+                    showError('Upload failed. Please try again.');
+                }
+            } catch (error) {
+                showError('Could not connect to server');
+            }
+        }
+
+        async function loadSampleData() {
+            if (!confirm('This will add 20+ sample documents about various topics. Continue?')) {
+                return;
+            }
+
+            showSuccess('Loading sample data... This may take a moment.');
+
+            try {
+                const response = await fetch(`${API_URL}/api/load-sample-data`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    showSuccess('✅ Successfully loaded 20+ sample documents! Go to search page to try it out.');
+                } else {
+                    showError('Failed to load sample data. Make sure server is running.');
+                }
+            } catch (error) {
+                showError('Could not connect to server. Make sure it is running on port 8000.');
+            }
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

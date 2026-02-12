@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Engine</title>
+    <style>
+        /* New Navigation Styles */
+        .nav-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 80px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 56px;
+            color: white;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: -1px;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 50px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            font-size: 20px;
+            color: #667eea;
+            margin-right: 15px;
+        }
+
+        #searchInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 18px;
+            padding: 12px 0;
+            color: #333;
+        }
+
+        #searchInput::placeholder {
+            color: #aaa;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-btn:active {
+            transform: scale(0.98);
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .results {
+            margin-top: 40px;
+        }
+
+        .result-stats {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-title {
+            font-size: 22px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .result-content {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #888;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .relevance-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            margin-top: 50px;
+            display: none;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .logo h1 {
+                font-size: 40px;
+            }
+
+            .container {
+                margin-top: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="upload.html" class="nav-btn">
+            <span>➕</span> Upload Data
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <h1>🔍 Search Engine</h1>
+            <p>Powered by TF-IDF Ranking Algorithm</p>
+        </div>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search for anything..." autofocus>
+            <button class="search-btn" onclick="search()">Search</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>⏳ Searching...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="no-results" id="noResults">
+            <p>😕 No results found. Try different keywords!</p>
+        </div>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        // Use relative path for deployment
+        const API_URL = '';
+
+        // Search when Enter key is pressed
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                search();
+            }
+        });
+
+        async function search() {
+            const query = document.getElementById('searchInput').value.trim();
+
+            if (!query) {
+                alert('Please enter a search query!');
+                return;
+            }
+
+            // Show loading, hide results
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('noResults').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}&page=1&limit=10`);
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+
+                // Hide loading
+                document.getElementById('loading').classList.remove('show');
+
+                // Display results
+                displayResults(data);
+
+            } catch (error) {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('error').textContent = '❌ Error: Could not connect to search engine. Make sure the server is running!';
+                document.getElementById('error').classList.add('show');
+                console.error('Search error:', error);
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+
+            if (data.total_results === 0) {
+                document.getElementById('noResults').classList.add('show');
+                return;
+            }
+
+            // Show result stats
+            const statsHTML = `
+                <div class="result-stats">
+                    Found <strong>${data.total_results}</strong> result${data.total_results !== 1 ? 's' : ''} for "<strong>${data.query}</strong>"
+                </div>
+            `;
+
+            // Create result cards
+            const resultsHTML = data.results.map((result, index) => `
+                <div class="result-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="result-title">${result.title}</div>
+                    <div class="result-content">${result.content}</div>
+                    <div class="result-meta">
+                        <span>Created: ${new Date(result.created_at).toLocaleDateString()}</span>
+                        <span class="relevance-score">Relevance: ${(result.relevance_score * 100).toFixed(1)}%</span>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = statsHTML + resultsHTML;
+        }
+
+        // Auto-focus on search input
+        document.getElementById('searchInput').focus();
+    </script>
+</body>
+
+</html>
